@@ -1,0 +1,142 @@
+// Type your program in here!
+import { create_audio, update_to_top, pointer_over_gameobject, query_pointer_position, input_left_mouse_down, update_scale, create_sprite, update_color, set_fps, get_game_time, query_position, update_loop, build_game, create_text, set_dimensions, create_rectangle, update_position, input_key_down } from "arcade_2d";
+//Set size of canvas.
+const width = 1000;
+const height = 563;
+
+//Set default position.
+const default_pos = [width/2, height*2];
+
+//Set background.
+const background_in_game = create_sprite("https://s2.loli.net/2023/07/18/mXlqKWQPtE9A8Dj.png");
+const background = create_sprite("https://s2.loli.net/2023/07/18/QsNMbJ84EFjLABI.png");
+update_position(background, [width/2, height/2]);
+update_position(background_in_game, default_pos);
+
+const pause_background = create_sprite("https://s2.loli.net/2023/07/18/jvyQhPiSGr8EMB9.png");
+update_position(pause_background, default_pos);
+
+//Set initial position of four notes.
+const initial_position = [[width/2 - 140, -30], [width/2 - 50, -30], [width/2 + 50, -30], [width/2 + 142, -30]];
+const note = create_sprite("https://s2.loli.net/2023/07/18/o67whfJxu5TFSWE.png");
+update_scale(note, [0.9,0.9]);
+const note_pos = update_position(note, initial_position[3]);
+
+//Set judgement.
+const perfect_height = 497;
+const perfect = create_sprite("https://s2.loli.net/2023/07/18/yBX5P34nqTKQLcR.png");
+update_position(perfect, default_pos);
+const good = create_sprite("https://s2.loli.net/2023/07/18/4B8yNWC597Sznsc.png");
+update_position(good, default_pos);
+const miss = create_sprite("https://s2.loli.net/2023/07/18/1tIqWzXGTk7YNx8.png");
+update_position(miss, default_pos);
+
+//Set buttons.
+const start = update_scale(create_sprite("https://s2.loli.net/2023/07/18/5kds7SNzFPcgpby.png"), [0.5, 0.5]);
+let if_start = false;
+const start_button = update_position(start, [width/2, height/2]);
+
+const resume = create_rectangle(200, 100);
+const resume_button = update_position(resume, default_pos);
+const exit = create_rectangle(200, 100);
+const exit_button = update_position(exit, default_pos);
+
+let time = 0;
+let last_esc = 0;
+let last_note = 0;
+
+set_dimensions([width, height]);
+set_fps(120);
+
+//Set rhythm.
+//const song1 = create_audio( , 0.5);
+
+
+//Loop of the game.
+update_loop(game_state => {
+    //start
+    if (input_left_mouse_down() && pointer_over_gameobject(start_button)){
+        update_position(start, default_pos);
+        update_position(background, default_pos);
+        update_position(background_in_game, [width/2, height/2]);
+        update_to_top(note);
+        if_start = true;
+    }
+    
+    //pause
+    if (input_key_down("Escape") && ((get_game_time() - last_esc )> 300)) {
+        if(if_start){
+            if_start = false;
+            update_position(pause_background, [width/2, height/2]);
+            update_to_top(pause_background);
+            update_position(resume, [width/2, height/2-100]);
+            update_to_top(resume);
+            update_position(exit, [width/2, height/2+100]);
+            update_to_top(exit);
+            last_esc = get_game_time();
+        } else {
+            if_start = true;
+            update_position(resume, default_pos);
+            update_position(exit, default_pos);
+            update_position(pause_background, default_pos);
+            last_esc = get_game_time();
+        }
+    }
+    
+    //resume
+    if (input_left_mouse_down() && pointer_over_gameobject(resume_button)) {
+        if_start = true;
+        update_position(resume, default_pos);
+        update_position(exit, default_pos);
+        update_position(pause_background, default_pos);
+    }
+    
+    //exit
+    if (input_left_mouse_down() && pointer_over_gameobject(exit_button)) {
+        if_start = false;
+        update_position(resume, default_pos);
+        update_position(exit, default_pos);
+        update_position(start, [width/2, height/2]);
+        update_position(note, [width/2, -30]);
+        update_position(background_in_game, default_pos);
+        update_position(pause_background, default_pos);
+        update_position(background, [width/2, height/2]);
+    }
+    
+    if (if_start === true){
+        const new_position = query_position(note_pos);
+        if (new_position[1] < 600) {
+            new_position[1] = new_position[1] + 2;
+        }
+        
+        if (input_key_down("a") && ((get_game_time() - last_note) > 200)) {
+            //judge
+            if (new_position[1] >= (perfect_height-15) && new_position[1] <= (perfect_height+15)) {
+                update_position(miss, default_pos);
+                update_position(good, default_pos);
+                update_position(perfect, [width/2, height/2]);
+                last_note = get_game_time();
+            } else if (new_position[1] >= (perfect_height-40) && new_position[1] <= (perfect_height+40)) {
+                update_position(miss, default_pos);
+                update_position(perfect, default_pos);
+                update_position(good, [width/2, height/2]);
+                last_note = get_game_time();
+            } else {
+                update_position(miss, [width/2, height/2]);
+                update_position(perfect, default_pos);
+                update_position(good, default_pos);
+                last_note = get_game_time();
+            }
+        }
+    
+        if ((get_game_time() - last_note) > 300) {
+            update_position(good, default_pos);
+            update_position(perfect, default_pos);
+            update_position(miss, default_pos);
+        }
+    
+        update_position(note, new_position);
+    }
+});
+
+build_game(); 
