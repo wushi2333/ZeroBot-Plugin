@@ -209,7 +209,7 @@ import (
 	"github.com/wdvxdr1123/ZeroBot/driver"
 	"github.com/wdvxdr1123/ZeroBot/message"
 
-	// webctrl "github.com/FloatTech/zbputils/control/web"
+	webctrl "github.com/FloatTech/zbputils/control/web"
 
 	"github.com/FloatTech/ZeroBot-Plugin/kanban/banner"
 	// -----------------------以上为内置依赖，勿动------------------------ //
