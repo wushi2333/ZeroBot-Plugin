@@ -296,7 +296,7 @@ func init() {
 	}
 	config.W = []*driver.WSClient{driver.NewWebSocketClient(*url, *token)}
 	config.Z = zero.Config{
-		NickName:       append([]string{*adana}, "小椛", "椛椛"，"椛"),
+		NickName:       append([]string{*adana}, "小椛", "椛椛", "椛"),
 		CommandPrefix:  *prefix,
 		SuperUsers:     sus,
 		RingLen:        *rsz,
